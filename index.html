@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10251d">
+<title>PIRHOS | Démonstration</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6f4;color:#18291f}
+header{background:#10251d;color:white;padding:18px}
+nav{max-width:1000px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:25px;font-weight:bold}.logo span{color:#68e0a1}
+.hero{padding:38px 18px;background:#19442f;color:white;text-align:center}
+.hero h1{font-size:32px;margin:0 0 12px}
+.hero p{line-height:1.6}
+.container{max-width:1000px;margin:auto;padding:20px 15px}
+.warning{background:#fff3cd;border:1px solid #e4cd85;padding:13px;border-radius:10px;line-height:1.5}
+.panel,.product{background:white;padding:17px;border-radius:12px;margin:14px 0;box-shadow:0 2px 10px #00000008}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.product h3{font-size:16px;margin:10px 0}
+.price{font-size:19px;font-weight:bold;color:#147747}
+button{background:#167747;color:white;border:0;border-radius:8px;padding:12px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.6}
+.full{width:100%}
+input,select{width:100%;padding:12px;border:1px solid #ccd5ce;border-radius:8px;margin:7px 0 12px;font-size:16px}
+.result{font-size:25px;font-weight:bold;color:#147747}
+.small{font-size:13px;color:#5d6b61;line-height:1.5}
+footer{background:#10251d;color:#dce8df;text-align:center;padding:24px;font-size:13px;margin-top:25px}
+[hidden]{display:none!important}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+<nav>
+<div class="logo">PIR<span>HOS</span></div>
+<div style="font-size:12px">MODE DÉMO</div>
+</nav>
+</header>
+
+<section class="hero">
+<h1>Bienvenue chez PIRHOS</h1>
+<p>Découvrez notre catalogue et testez notre simulateur.</p>
+<button onclick="document.getElementById('catalogue').scrollIntoView({behavior:'smooth'})">Voir les produits</button>
+</section>
+
+<main class="container">
+<div class="warning">
+<strong>Simulation uniquement.</strong> Aucun argent réel n'est accepté ou versé.
+Les revenus affichés sont fictifs et ne constituent pas une promesse de rendement.
+</div>
+
+<section class="panel">
+<h2>Paramètres de démonstration</h2>
+<p>Dépôt minimum simulé : <strong>1 000 F CFA</strong></p>
+<p>Retrait minimum simulé : <strong>2 000 F CFA</strong></p>
+<p>Commission simulée sur un retrait : <strong>20 %</strong></p>
+<p class="small">YAS et Moov Money ne sont pas connectés. Aucun transfert réel n'est effectué.</p>
+</section>
+
+<section class="panel" id="simulateur">
+<h2>Simulateur de revenus</h2>
+<label for="capital">Montant fictif (F CFA)</label>
+<input id="capital" type="number" min="1000" step="1000" value="1000">
+<button class="full" onclick="simuler(1)">Simuler après 24 heures</button>
+<button class="full" style="margin-top:8px" onclick="simuler(2)">Simuler après 48 heures</button>
+<p>Capital initial : <strong id="initial">1 000 F CFA</strong></p>
+<p>Solde théorique : <span class="result" id="resultat">1 500 F CFA</span></p>
+<p class="small" id="detail">Exemple fictif : aucune somme n'est créditée à un compte.</p>
+</section>
+
+<h2 id="catalogue">Catalogue des 20 produits</h2>
+<p class="small">Prix de démonstration, de 1 000 à 20 000 F CFA par pas de 1 000 F.</p>
+<div class="grid" id="produits"></div>
+
+<section class="panel">
+<h2>Demande de retrait (maquette)</h2>
+<p class="small">Ce formulaire ne transmet aucune demande et n'effectue aucun paiement.</p>
+<label for="montantRetrait">Montant fictif à retirer (F CFA)</label>
+<input id="montantRetrait" type="number" min="2000" step="100" value="2000">
+<label for="operateur">Opérateur</label>
+<select id="operateur">
+<option>YAS</option>
+<option>Moov Money</option>
+</select>
+<label for="telephone">Numéro de démonstration</label>
+<input id="telephone" type="tel" placeholder="Ex. : 90 00 00 00">
+<button class="full" onclick="demanderRetrait()">Tester la demande</button>
+<p id="statut" aria-live="polite"></p>
+</section>
+</main>
+
+<footer>
+<strong>PIRHOS</strong><br>
+Prototype de démonstration — aucune transaction réelle.<br>
+© 2026 PIRHOS
+</footer>
+
+<script>
+function fcfa(n){
+ return Math.round(n).toLocaleString("fr-FR")+" F CFA";
+}
+
+function simuler(jours){
+ const champ=document.getElementById("capital");
+ const capital=Number(champ.value);
+ if(!Number.isFinite(capital)||capital<1000){
+  alert("Entre un montant fictif d'au moins 1 000 F CFA.");
+  return;
+ }
+ const total=capital*Math.pow(1.5,jours);
+ document.getElementById("initial").textContent=fcfa(capital);
+ document.getElementById("resultat").textContent=fcfa(total);
+ document.getElementById("detail").textContent=
+ "Simulation fictive après "+(24*jours)+
+ " heures, à titre illustratif seulement. Aucun revenu réel n'est créé.";
+}
+
+function demanderRetrait(){
+ const montant=Number(document.getElementById("montantRetrait").value);
+ if(!Number.isFinite(montant)||montant<2000){
+  document.getElementById("statut").textContent=
+  "Le montant minimum de démonstration est de 2 000 F CFA.";
+  return;
+ }
+ document.getElementById("statut").textContent=
+ "Test réussi : demande fictive de "+fcfa(montant)+
+ " via "+document.getElementById("operateur").value+
+ ". Aucune demande n'a été envoyée et aucun paiement n'a été réalisé.";
+}
+
+const catalogue=document.getElementById("produits");
+for(let i=1;i<=20;i++){
+ const prix=i*1000;
+ const article=document.createElement("article");
+ article.className="product";
+ const titre=document.createElement("h3");
+ titre.textContent="Produit "+String(i).padStart(2,"0");
+ const description=document.createElement("p");
+ description.className="small";
+ description.textContent="Produit de démonstration PIRHOS.";
+ const montant=document.createElement("p");
+ montant.className="price";
+ montant.textContent=fcfa(prix);
+ const bouton=document.createElement("button");
+ bouton.className="full";
+ bouton.textContent="Tester";
+ bouton.addEventListener("click",()=>{
+  alert("Produit de démonstration à "+fcfa(prix)+
+  ". Aucun achat réel n'est possible.");
+ });
+ article.append(titre,description,montant,bouton);
+ catalogue.appendChild(article);
+}
+simuler(1);
+</script>
+</body>
+  </html>
+  
